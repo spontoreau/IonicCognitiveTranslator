@@ -1,0 +1,6 @@
+<ion-list radio-group>
+  <ion-item *ngFor="let item of languages">
+    <ion-label>{{item.name}}</ion-label>
+    <ion-radio value="{{item.name}}" [checked]="item.code === this.selected" (ionSelect)="onSelected(item.code)"></ion-radio>
+  </ion-item>
+</ion-list>
