@@ -11,8 +11,8 @@ import 'rxjs/add/operator/toPromise';
   templateUrl: 'home.html'
 })
 export class HomePage implements OnInit {
-  from: Language;
-  to: Language;
+  from: string;
+  to: string;
   languages: Array<Language> = new Array<Language>();
   text: string;
   isTalking: boolean = false;
@@ -31,41 +31,54 @@ export class HomePage implements OnInit {
     (async () => {
       let loading = this.loadingController.create({ content: 'Loading languages...' });
       await loading.present();
-      this.translatorService.getLanguages().subscribe(languages => this.languages = languages);
-      this.translatorService.getToken().subscribe(token => this.token = token);
+
+      this.translatorService
+        .getLanguages()
+        .subscribe(languages => this.languages = languages, err => this.pushError(err));
+      this.translatorService
+        .getToken()
+        .subscribe(token => this.token = token, err => this.pushError(err));
+
       await loading.dismiss();
     })();
   }
 
-  speech(): void {
+  async speech(): Promise<void> {
     this.isTalking = !this.isTalking;
-    /*this.speech.startListening().subscribe((data) => {
+
+    let hasPermission = await this.hasSpeedchPermission();
+
+    if (!hasPermission) {
+      await this.getSpeechPermission();
+    }
+
+
+    this.speechRecognition.startListening().subscribe((data) => {
       data.forEach(item => {
-        this.textToTranslate = this.textToTranslate + item;
+        this.text = this.text + item;
       });
-    }, (err) => {
-      this.textToTranslate = err;
-    });*/
+    }, err => this.pushError(err));
   }
 
   translate(): void {
     this.isTalking = !this.isTalking;
-    /**/
-    /*(async () => {
+    (async () => {
+      await this.speechRecognition.stopListening();
       let loading = this.loadingController.create({ content: 'Translate...' });
 
       await loading.present();
-      try {
-        await this.loadTranslation();
-        await this.platfom.ready();
-        await this.tts.speak({ text: this.tranlation, locale: `${this.current.code}-${this.current.code.toUpperCase()}`, rate: 1.5 });
-      }
-      catch (err) {
-        let alert = this.alertController.create({ message: err, title: 'Error' });
-        await alert.present();
-      }
-      await loading.dismiss();
-    })();*/
+      await this.platfom.ready();
+
+      let from = this.languages.find(language => language.code === this.from);
+      let to = this.languages.find(language => language.code === this.to);
+      this.translatorService
+        .getTranslation(this.token, from, to, this.text)
+        .subscribe((translation) => {
+          this.tts
+            .speak({ text: translation, locale: `${to.code}-${to.code.toUpperCase()}`, rate: 1.5 })
+            .then(() => loading.dismiss());
+        }, err => this.pushError(err));
+    })();
   }
 
   async getSpeechPermission(): Promise<void> {
@@ -87,5 +100,10 @@ export class HomePage implements OnInit {
     catch (e) {
       console.error(e);
     }
+  }
+
+  pushError(err: any) {
+    let toast = this.toastController.create({ message: err, duration: 5000 });
+    toast.present();
   }
 }

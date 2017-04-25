@@ -10,17 +10,18 @@
     <ion-item>
       <ion-label>From</ion-label>
       <ion-select [(ngModel)]="from" multiple="false" cancelText="Cancel" okText="Ok" [disabled]="isTalking">
-        <ion-option *ngFor="let item of languages" value="{{item.name}}">{{item.name}}</ion-option>
+        <ion-option *ngFor="let item of languages" value="{{item.code}}">{{item.name}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>
       <ion-label>To</ion-label>
       <ion-select [(ngModel)]="to" multiple="false" cancelText="Cancel" okText="Ok" [disabled]="isTalking">
-        <ion-option *ngFor="let item of languages" value="{{item.name}}">{{item.name}}</ion-option>
+        <ion-option *ngFor="let item of languages" value="{{item.code}}">{{item.name}}</ion-option>
       </ion-select>
     </ion-item>
-    <ion-item>
-      <ion-input type="text" [(ngModel)]="textToTranslate"></ion-input>
+    <ion-item *ngIf="text">Text to translate:</ion-item>
+    <ion-item text-wrap>
+      {{text}}
     </ion-item>
   </ion-list>
   <ion-fab bottom center>

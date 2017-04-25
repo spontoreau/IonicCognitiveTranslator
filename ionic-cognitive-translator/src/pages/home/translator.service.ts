@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from "@angular/http";
+import { Language } from "./language";
 import { Observable } from "rxjs/Observable";
 import 'rxjs/add/operator/map';
-import { Language } from "./language";
 
 @Injectable()
 export class TranslatorService {
+    private readonly tokenUrl: string = 'https://api.cognitive.microsoft.com';
+    private readonly languageUrl: string = 'https://dev.microsofttranslator.com';
+    private readonly translateUrl: string = 'https://api.microsofttranslator.com';
 
     constructor(private http: Http) { }
 
@@ -13,7 +16,7 @@ export class TranslatorService {
         let headers = new Headers();
         headers.set('Ocp-Apim-Subscription-Key', '778f5a172ecc47d3968b90ea2babb985');
         return this.http
-            .post('https://api.cognitive.microsoft.com/sts/v1.0/issueToken', {}, { headers: headers })
+            .post(`${this.tokenUrl}/sts/v1.0/issueToken`, {}, { headers: headers })
             .map((rep) => rep.text());
     }
 
@@ -21,7 +24,7 @@ export class TranslatorService {
         let headers = new Headers();
         headers.set('Accept-Language', 'en');
         return this.http
-            .get('https://dev.microsofttranslator.com/languages?api-version=1.0&scope=text', { headers: headers })
+            .get(`${this.languageUrl}/languages?api-version=1.0&scope=text`, { headers: headers })
             .map(res => res.json().text)
             .map(languages => this.parse(languages));
     }
@@ -34,7 +37,7 @@ export class TranslatorService {
         let options = new RequestOptions({ headers: headers });
 
         return this.http
-            .get(`https://api.microsofttranslator.com/V2/Http.svc/Translate?from=${from.code}&to=${to.code}&text=${text}`, options)
+            .get(`${this.translateUrl}/V2/Http.svc/Translate?from=${from.code}&to=${to.code}&text=${text}`, options)
             .map(res => this.parseTranslationFromXml(res.text()));
     }
 
