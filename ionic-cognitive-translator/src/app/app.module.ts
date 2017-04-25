@@ -9,6 +9,8 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { LanguagePopover } from '../pages/language-popover/language-popover';
+import { SpeechRecognition } from "@ionic-native/speech-recognition";
+import { TranslatorService } from "../pages/home/translator.service";
 
 @NgModule({
   declarations: [
@@ -31,6 +33,8 @@ import { LanguagePopover } from '../pages/language-popover/language-popover';
     StatusBar,
     SplashScreen,
     TextToSpeech,
+    SpeechRecognition,
+    TranslatorService,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

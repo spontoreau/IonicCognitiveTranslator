@@ -1,82 +1,57 @@
 import { Component, OnInit } from '@angular/core';
-import { Http, Headers, RequestOptions } from '@angular/http';
-import { PopoverController, LoadingController, AlertController, Platform } from 'ionic-angular';
-import { LanguagePopover } from "../language-popover/language-popover";
+import { LoadingController, Platform, ToastController } from 'ionic-angular';
+import { TextToSpeech } from '@ionic-native/text-to-speech';
+import { SpeechRecognition } from '@ionic-native/speech-recognition';
+import { Language } from './language';
+import { TranslatorService } from "./translator.service";
 import 'rxjs/add/operator/toPromise';
-import { Language } from "./language";
-import { TextToSpeech } from "@ionic-native/text-to-speech";
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage implements OnInit {
-  current: Language;
+  from: Language;
+  to: Language;
   languages: Array<Language> = new Array<Language>();
+  text: string;
+  isTalking: boolean = false;
   token: string;
-  textToTranslate: string;
-  tranlation: string;
 
-  constructor(private http: Http,
-    private popoverController: PopoverController,
+  constructor(
+    private translatorService: TranslatorService,
     private loadingController: LoadingController,
-    private alertController: AlertController,
+    private toastController: ToastController,
     private platfom: Platform,
-    private tts: TextToSpeech) {
-
+    private tts: TextToSpeech,
+    private speechRecognition: SpeechRecognition) {
   }
 
   ngOnInit(): void {
     (async () => {
       let loading = this.loadingController.create({ content: 'Loading languages...' });
       await loading.present();
-      await this.loadLanguages();
-      await this.acquireToken();
+      this.translatorService.getLanguages().subscribe(languages => this.languages = languages);
+      this.translatorService.getToken().subscribe(token => this.token = token);
       await loading.dismiss();
     })();
   }
 
-  popLanguages(ev): void {
-    let popover = this.popoverController.create(LanguagePopover, {
-      current: this.current.code,
-      languages: this.languages
-    });
-
-    popover.present({
-      ev: ev
-    });
-
-    popover.onDidDismiss((selected: string): void => {
-      this.current = this.languages.find((language) => language.code === selected);
-    });
-  }
-
-  private async loadLanguages() {
-    let headers = new Headers();
-    headers.set('Accept-Language', 'fr');
-    let res = await this.http
-      .get('https://dev.microsofttranslator.com/languages?api-version=1.0&scope=text', { headers: headers })
-      .toPromise();
-    let languages = res.json().text;
-    for (let code in languages) {
-      let language = languages[code];
-      this.languages.push({ code: code, name: language.name });
-    }
-
-    this.current = this.languages.find((language) => language.code === 'fr');
-  }
-
-  private async acquireToken() {
-    let headers = new Headers();
-    headers.set('Ocp-Apim-Subscription-Key', '778f5a172ecc47d3968b90ea2babb985');
-    let res = await this.http
-      .post('https://api.cognitive.microsoft.com/sts/v1.0/issueToken', {}, { headers: headers })
-      .toPromise();
-    this.token = res.text();
+  speech(): void {
+    this.isTalking = !this.isTalking;
+    /*this.speech.startListening().subscribe((data) => {
+      data.forEach(item => {
+        this.textToTranslate = this.textToTranslate + item;
+      });
+    }, (err) => {
+      this.textToTranslate = err;
+    });*/
   }
 
   translate(): void {
-    (async () => {
+    this.isTalking = !this.isTalking;
+    /**/
+    /*(async () => {
       let loading = this.loadingController.create({ content: 'Translate...' });
 
       await loading.present();
@@ -90,21 +65,27 @@ export class HomePage implements OnInit {
         await alert.present();
       }
       await loading.dismiss();
-    })();
+    })();*/
   }
 
-  private async loadTranslation() {
-    let headers = new Headers();
-    let bearerToken = `Bearer ${this.token}`;
-    headers.append('Authorization', bearerToken);
+  async getSpeechPermission(): Promise<void> {
+    try {
+      let permission = await this.speechRecognition.requestPermission();
+      console.log(permission);
+      return permission;
+    }
+    catch (e) {
+      console.error(e);
+    }
+  }
 
-    let options = new RequestOptions({ headers: headers });
-
-    let res = await this.http
-      .get(`https://api.microsofttranslator.com/V2/Http.svc/Translate?from=fr&to=${this.current.code}&text=${this.textToTranslate}`, options)
-      .toPromise();
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(res.text(), "application/xml");
-    this.tranlation = doc.documentElement.innerHTML;
+  async hasSpeedchPermission(): Promise<boolean> {
+    try {
+      let permission = await this.speechRecognition.hasPermission();
+      return permission;
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 }
