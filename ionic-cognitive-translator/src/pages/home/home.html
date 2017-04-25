@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Ionic Blank
+      Traducteur
     </ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="popLanguages($event)">
@@ -10,6 +10,13 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-
 <ion-content padding>
+  <ion-label stacked>Texte à traduire</ion-label>
+  <ion-input type="text" [(ngModel)]="textToTranslate"></ion-input>
+  <ion-label>{{tranlation}}</ion-label>
+  <ion-fab bottom center>
+    <button ion-fab color="light" (click)="translate()" [disabled]="textToTranslate === undefined || textToTranslate.length === 0">
+      <ion-icon name="mic"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>

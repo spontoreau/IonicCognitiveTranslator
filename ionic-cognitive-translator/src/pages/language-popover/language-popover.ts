@@ -17,7 +17,6 @@ export class LanguagePopover implements OnInit {
   ngOnInit(): void {
     if (this.navParams.data) {
       this.languages = this.navParams.data.languages;
-      console.log(this.languages);
       this.selected = this.navParams.data.current;
     }
   }
