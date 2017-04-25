@@ -14,7 +14,7 @@ export class HomePage implements OnInit {
   from: string;
   to: string;
   languages: Array<Language> = new Array<Language>();
-  text: string;
+  text: string = '';
   isTalking: boolean = false;
   token: string;
 
@@ -44,6 +44,7 @@ export class HomePage implements OnInit {
   }
 
   async speech(): Promise<void> {
+    this.text = '';
     this.isTalking = !this.isTalking;
 
     let hasPermission = await this.hasSpeedchPermission();
@@ -52,10 +53,14 @@ export class HomePage implements OnInit {
       await this.getSpeechPermission();
     }
 
+    let options = {
+      language: `${this.from}-${this.from.toUpperCase()}`,
+      matches: 1
+    }
 
-    this.speechRecognition.startListening().subscribe((data) => {
+    this.speechRecognition.startListening(options).subscribe(data => {
       data.forEach(item => {
-        this.text = this.text + item;
+        this.text += item;
       });
     }, err => this.pushError(err));
   }
@@ -83,22 +88,19 @@ export class HomePage implements OnInit {
 
   async getSpeechPermission(): Promise<void> {
     try {
-      let permission = await this.speechRecognition.requestPermission();
-      console.log(permission);
-      return permission;
+      return await this.speechRecognition.requestPermission();
     }
-    catch (e) {
-      console.error(e);
+    catch (err) {
+      this.pushError(err);
     }
   }
 
   async hasSpeedchPermission(): Promise<boolean> {
     try {
-      let permission = await this.speechRecognition.hasPermission();
-      return permission;
+      return await this.speechRecognition.hasPermission();
     }
-    catch (e) {
-      console.error(e);
+    catch (err) {
+      this.pushError(err);
     }
   }
 

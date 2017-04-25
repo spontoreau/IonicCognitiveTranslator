@@ -19,7 +19,7 @@
         <ion-option *ngFor="let item of languages" value="{{item.code}}">{{item.name}}</ion-option>
       </ion-select>
     </ion-item>
-    <ion-item *ngIf="text">Text to translate:</ion-item>
+    <ion-item *ngIf="text !== ''">Text to translate:</ion-item>
     <ion-item text-wrap>
       {{text}}
     </ion-item>
