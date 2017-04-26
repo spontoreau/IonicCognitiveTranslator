@@ -25,10 +25,10 @@
     </ion-item>
   </ion-list>
   <ion-fab bottom center>
-    <button ion-fab color="light" (click)="speech()" [disabled]="!this.from || !this.to" *ngIf="!isTalking">
+    <button ion-fab color="primary" (click)="speech()" [disabled]="!this.from || !this.to" *ngIf="!isTalking">
       <ion-icon name="mic"></ion-icon>
     </button>
-    <button ion-fab color="light" (click)="translate()" *ngIf="isTalking">
+    <button ion-fab color="danger" (click)="translate()" *ngIf="isTalking">
       <ion-icon name="square"></ion-icon>
     </button>
   </ion-fab>
