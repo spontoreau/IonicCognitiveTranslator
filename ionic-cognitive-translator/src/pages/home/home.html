@@ -5,24 +5,39 @@
     </ion-title>
   </ion-navbar>
 </ion-header>
-<ion-content padding>
-  <ion-list no-lines>
-    <ion-item>
-      <ion-label>From</ion-label>
-      <ion-select [(ngModel)]="from" multiple="false" cancelText="Cancel" okText="Ok" [disabled]="isTalking">
-        <ion-option *ngFor="let item of languages" value="{{item.code}}">{{item.name}}</ion-option>
-      </ion-select>
-    </ion-item>
-    <ion-item>
-      <ion-label>To</ion-label>
-      <ion-select [(ngModel)]="to" multiple="false" cancelText="Cancel" okText="Ok" [disabled]="isTalking">
-        <ion-option *ngFor="let item of languages" value="{{item.code}}">{{item.name}}</ion-option>
-      </ion-select>
-    </ion-item>
-    <ion-item *ngIf="text !== ''">Text to translate:</ion-item>
-    <ion-item text-wrap>
-      {{text}}
-    </ion-item>
+<ion-content>
+  <ion-list>
+    <ion-item-group>
+      <ion-item-divider color="light">Languages</ion-item-divider>
+      <ion-item>
+        <ion-label>From</ion-label>
+        <ion-select [(ngModel)]="from" multiple="false" cancelText="Cancel" okText="Ok" [disabled]="isTalking">
+          <ion-option *ngFor="let item of languages" value="{{item.code}}">{{item.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>To</ion-label>
+        <ion-select [(ngModel)]="to" multiple="false" cancelText="Cancel" okText="Ok" [disabled]="isTalking">
+          <ion-option *ngFor="let item of languages" value="{{item.code}}">{{item.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-item-group>
+    <ion-item-group>
+      <ion-item-divider *ngIf="text !== ''">
+        Text
+      </ion-item-divider>
+      <ion-item text-wrap>
+        {{text}}
+      </ion-item>
+    </ion-item-group>
+    <ion-item-group>
+      <ion-item-divider *ngIf="translation !== ''">
+        Translation
+      </ion-item-divider>
+      <ion-item text-wrap>
+        {{translation}}
+      </ion-item>
+    </ion-item-group>
   </ion-list>
   <ion-fab bottom center>
     <button ion-fab color="primary" (click)="speech()" [disabled]="!this.from || !this.to" *ngIf="!isTalking">

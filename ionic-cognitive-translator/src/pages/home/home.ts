@@ -15,6 +15,7 @@ export class HomePage implements OnInit {
   to: string;
   languages: Array<Language> = new Array<Language>();
   text: string = '';
+  translation: string = '';
   isTalking: boolean = false;
   token: string;
 
@@ -45,6 +46,7 @@ export class HomePage implements OnInit {
 
   async speech(): Promise<void> {
     this.text = '';
+    this.translation = '';
     this.isTalking = !this.isTalking;
 
     let hasPermission = await this.hasSpeedchPermission();
@@ -72,13 +74,13 @@ export class HomePage implements OnInit {
       let loading = this.loadingController.create({ content: 'Translate...' });
 
       await loading.present();
-      await this.platfom.ready();
 
       let from = this.languages.find(language => language.code === this.from);
       let to = this.languages.find(language => language.code === this.to);
       this.translatorService
         .getTranslation(this.token, from, to, this.text)
         .subscribe((translation) => {
+          this.translation = translation;
           this.tts
             .speak({ text: translation, locale: `${to.code}-${to.code.toUpperCase()}`, rate: 1.5 })
             .then(() => loading.dismiss());
