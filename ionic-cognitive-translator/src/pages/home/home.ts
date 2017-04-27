@@ -77,6 +77,7 @@ export class HomePage implements OnInit {
 
       let from = this.languages.find(language => language.code === this.from);
       let to = this.languages.find(language => language.code === this.to);
+
       this.translatorService
         .getTranslation(this.token, from, to, this.text)
         .subscribe((translation) => {
