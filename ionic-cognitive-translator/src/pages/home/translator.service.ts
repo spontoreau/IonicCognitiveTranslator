@@ -14,7 +14,7 @@ export class TranslatorService {
 
     getToken(): Observable<string> {
         let headers = new Headers();
-        headers.set('Ocp-Apim-Subscription-Key', '');
+        headers.set('Ocp-Apim-Subscription-Key', '46e77edeaebb4f73b8305e7d835d077b');
         return this.http
             .post(`${this.tokenUrl}/sts/v1.0/issueToken`, {}, { headers: headers })
             .map((rep) => rep.text());
